@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدير الميزانية الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #f4f7f6;
+            --text: #222;
+            --box: #ffffff;
+            --border: #ddd;
+            --primary: #3498db;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+        }
+
+        body.dark {
+            --bg: #000000;
+            --text: #ffffff;
+            --box: #111111;
+            --border: #222222;
+            --primary: #2980b9;
+            --danger: #c0392b;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: var(--box);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            position: relative;
+        }
+
+        #themeToggle {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .box {
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background: var(--box);
+        }
+
+        .box-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text);
+            border-right: 4px solid var(--primary);
+            padding-right: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--box);
+            color: var(--text);
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-add { background: var(--primary); color: white; }
+        .btn-del { background: var(--danger); color: white; padding: 5px 12px; }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-top: 5px;
+        }
+
+        .result-panel {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .daily-limit {
+            font-size: 40px;
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .user-box {
+            background: var(--box);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 25px;
+        }
+
+        .flex {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>
+        مدير الميزانية الذكي
+        <span id="themeToggle">🌙</span>
+    </h2>
+
+    <div class="box">
+        <span class="box-title">الدخل الشهري</span>
+        <input type="number" id="income" placeholder="أدخل الدخل" oninput="saveAndCalc()">
+    </div>
+
+    <div class="box">
+        <span class="box-title">المصاريف الشهرية الثابتة</span>
+        <div class="flex">
+            <input type="text" id="fName" placeholder="اسم البند">
+            <input type="number" id="fAmount" placeholder="المبلغ">
+            <button class="btn-add" onclick="addItem('fixed')">إضافة</button>
+        </div>
+        <div id="fixedList"></div>
+    </div>
+
+    <div class="box">
+        <span class="box-title">المتبقي اليدوي (اختياري)</span>
+        <input type="number" id="manualRemain" placeholder="أدخل المتبقي يدويًا" oninput="saveAndCalc()">
+    </div>
+
+    <div class="box">
+        <span class="box-title">سجل الصرف اليومي</span>
+        <div class="flex">
+            <input type="text" id="vName" placeholder="غداء، بنزين...">
+            <input type="number" id="vAmount" placeholder="المبلغ">
+            <button class="btn-add" style="background: var(--danger);" onclick="addItem('var')">حسم</button>
+        </div>
+        <div id="variableList"></div>
+    </div>
+
+    <div class="box">
+        <span class="box-title">يوم نزول الراتب القادم</span>
+        <input type="number" id="salaryDay" value="27" oninput="saveAndCalc()">
+    </div>
+
+    <div class="result-panel">
+        <span>حد الصرف اليومي:</span>
+        <div class="daily-limit" id="dailyDisplay">0.00</div>
+        <div>المتبقي الإجمالي: <b id="remTotal">0</b></div>
+        <div>الأيام المتبقية: <b id="remDays">0</b></div>
+    </div>
+
+    <!-- إدارة المستخدمين -->
+    <div class="user-box">
+        <span class="box-title">إدارة المستخدمين</span>
+
+        <label>اسم المستخدم:</label>
+        <input type="text" id="userName" oninput="renameUser()">
+
+        <label>اختر مستخدمًا:</label>
+        <select id="userSelect" onchange="switchUser()"></select>
+
+        <div class="flex">
+            <button class="btn-add" onclick="newUser()">مستخدم جديد</button>
+            <button class="btn-del" onclick="deleteUser()">حذف المستخدم</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+    let currentUser = localStorage.getItem("currentUser") || null;
+
+    if (!currentUser) newUser();
+    else loadUser();
+
+    function newUser() {
+        let id = "user_" + Date.now();
+        users[id] = {
+            name: "User " + (Object.keys(users).length + 1),
+            income: "",
+            salaryDay: 27,
+            manualRemain: "",
+            fixed: [],
+            variable: [],
+            dark: false
+        };
+        currentUser = id;
+        saveUsers();
+        loadUser();
+    }
+
+    function deleteUser() {
+        if (Object.keys(users).length === 1) return alert("لا يمكن حذف آخر مستخدم.");
+        delete users[currentUser];
+        currentUser = Object.keys(users)[0];
+        saveUsers();
+        loadUser();
+    }
+
+    function renameUser() {
+        users[currentUser].name = document.getElementById("userName").value;
+        saveUsers();
+        loadUserList();
+    }
+
+    function switchUser() {
+        currentUser = document.getElementById("userSelect").value;
+        saveUsers();
+        loadUser();
+    }
+
+    function saveUsers() {
+        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("currentUser", currentUser);
+    }
+
+    function loadUserList() {
+        let sel = document.getElementById("userSelect");
+        sel.innerHTML = "";
+        for (let id in users) {
+            let opt = document.createElement("option");
+            opt.value = id;
+            opt.textContent = users[id].name;
+            if (id === currentUser) opt.selected = true;
+            sel.appendChild(opt);
+        }
+    }
+
+    function loadUser() {
+        let u = users[currentUser];
+
+        document.getElementById("userName").value = u.name;
+        document.getElementById("income").value = u.income;
+        document.getElementById("salaryDay").value = u.salaryDay;
+        document.getElementById("manualRemain").value = u.manualRemain;
+
+        fixedItems = u.fixed;
+        varItems = u.variable;
+
+        document.body.classList.toggle("dark", u.dark);
+        document.getElementById("themeToggle").textContent = u.dark ? "☀️" : "🌙";
+
+        loadUserList();
+        render();
+    }
+
+    function saveAndCalc() {
+        let u = users[currentUser];
+        u.income = document.getElementById("income").value;
+        u.salaryDay = document.getElementById("salaryDay").value;
+        u.manualRemain = document.getElementById("manualRemain").value;
+        saveUsers();
+        calculate();
+    }
+
+    function addItem(type) {
+        let name = document.getElementById(type === "fixed" ? "fName" : "vName");
+        let amt = document.getElementById(type === "fixed" ? "fAmount" : "vAmount");
+
+        if (!name.value || !amt.value) return;
+
+        let item = { id: Date.now(), name: name.value, amt: parseFloat(amt.value) };
+
+        if (type === "fixed") fixedItems.push(item);
+        else varItems.push(item);
+
+        users[currentUser].fixed = fixedItems;
+        users[currentUser].variable = varItems;
+
+        name.value = "";
+        amt.value = "";
+
+        saveUsers();
+        render();
+    }
+
+    function deleteItem(id, type) {
+        if (type === "fixed") fixedItems = fixedItems.filter(i => i.id !== id);
+        else varItems = varItems.filter(i => i.id !== id);
+
+        users[currentUser].fixed = fixedItems;
+        users[currentUser].variable = varItems;
+
+        saveUsers();
+        render();
+    }
+
+    function render() {
+        document.getElementById("fixedList").innerHTML =
+            fixedItems.map(i => `<div class="list-item">${i.name}: ${i.amt} <button class="btn-del" onclick="deleteItem(${i.id}, 'fixed')">X</button></div>`).join("");
+
+        document.getElementById("variableList").innerHTML =
+            varItems.map(i => `<div class="list-item">${i.name}: ${i.amt} <button class="btn-del" onclick="deleteItem(${i.id}, 'var')">X</button></div>`).join("");
+
+        calculate();
+    }
+
+    function calculate() {
+        let u = users[currentUser];
+
+        let income = parseFloat(u.income) || 0;
+        let manual = parseFloat(u.manualRemain);
+        let fixed = fixedItems.reduce((s, i) => s + i.amt, 0);
+        let variable = varItems.reduce((s, i) => s + i.amt, 0);
+
+        let remaining = isNaN(manual)
+            ? income - fixed - variable
+            : manual - variable;
+
+        let today = new Date();
+        let target = new Date(today.getFullYear(), today.getMonth(), u.salaryDay);
+        if (today.getDate() >= u.salaryDay) target.setMonth(target.getMonth() + 1);
+
+        let diff = Math.max(1, Math.ceil((target - today) / 86400000));
+        let daily = remaining > 0 ? remaining / diff : 0;
+
+        document.getElementById("remTotal").textContent = remaining.toLocaleString();
+        document.getElementById("remDays").textContent = diff;
+        document.getElementById("dailyDisplay").textContent = daily.toFixed(2);
+    }
+
+    document.getElementById("themeToggle").onclick = () => {
+        let u = users[currentUser];
+        u.dark = !u.dark;
+        saveUsers();
+        loadUser();
+    };
+</script>
+
+</body>
+</html>
