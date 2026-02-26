@@ -15,6 +15,9 @@
             --primary: #3498db;
             --danger: #e74c3c;
             --success: #2ecc71;
+            --radius: 14px;
+            --padding: 18px;
+            --gap: 14px;
         }
 
         body.dark {
@@ -32,6 +35,7 @@
             background: var(--bg);
             color: var(--text);
             padding: 20px;
+            margin: 0;
         }
 
         .container {
@@ -39,98 +43,118 @@
             margin: auto;
             background: var(--box);
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
 
         h2 {
             text-align: center;
             color: var(--primary);
             position: relative;
+            margin-bottom: 30px;
+            font-size: 26px;
         }
 
         #themeToggle {
             position: absolute;
             left: 10px;
             top: 0;
-            font-size: 26px;
+            font-size: 28px;
             cursor: pointer;
+            padding: 5px;
         }
 
         .box {
             border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            padding: var(--padding);
+            border-radius: var(--radius);
+            margin-bottom: 25px;
             background: var(--box);
         }
 
         .box-title {
             font-weight: bold;
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
             color: var(--text);
             border-right: 4px solid var(--primary);
             padding-right: 10px;
+            font-size: 17px;
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
+            padding: 16px 14px;
+            margin-top: 10px;
+            margin-bottom: 14px;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: var(--radius);
             background: var(--box);
             color: var(--text);
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.25);
         }
 
         button {
             cursor: pointer;
             border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
+            border-radius: var(--radius);
+            padding: 12px 18px;
             font-weight: bold;
-            transition: 0.3s;
+            transition: 0.25s;
+            font-size: 15px;
         }
 
         .btn-add { background: var(--primary); color: white; }
-        .btn-del { background: var(--danger); color: white; padding: 5px 12px; }
+        .btn-del { background: var(--danger); color: white; padding: 8px 14px; }
+
+        .flex {
+            display: flex;
+            gap: var(--gap);
+            flex-wrap: wrap;
+        }
 
         .list-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             background: var(--bg);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: var(--radius);
             border: 1px solid var(--border);
-            margin-top: 5px;
+            margin-top: 8px;
+            font-size: 15px;
         }
 
         .result-panel {
             background: #2c3e50;
             color: white;
             padding: 25px;
-            border-radius: 15px;
+            border-radius: var(--radius);
             text-align: center;
+            margin-top: 25px;
         }
 
         .daily-limit {
-            font-size: 40px;
+            font-size: 42px;
             font-weight: bold;
             color: var(--success);
+            margin: 10px 0;
         }
 
         .user-box {
             background: var(--box);
             border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 25px;
-        }
-
-        .flex {
-            display: flex;
-            gap: 10px;
+            padding: var(--padding);
+            border-radius: var(--radius);
+            margin-top: 30px;
         }
     </style>
 </head>
@@ -186,15 +210,13 @@
         <div>الأيام المتبقية: <b id="remDays">0</b></div>
     </div>
 
-    <!-- إدارة المستخدمين -->
+    <!-- إدارة المستخدمين (مُدمجة) -->
     <div class="user-box">
-        <span class="box-title">إدارة المستخدمين</span>
+        <span class="box-title">المستخدم</span>
 
-        <label>اسم المستخدم:</label>
-        <input type="text" id="userName" oninput="renameUser()">
-
-        <label>اختر مستخدمًا:</label>
         <select id="userSelect" onchange="switchUser()"></select>
+
+        <input type="text" id="userName" placeholder="تعديل اسم المستخدم" oninput="renameUser()">
 
         <div class="flex">
             <button class="btn-add" onclick="newUser()">مستخدم جديد</button>
