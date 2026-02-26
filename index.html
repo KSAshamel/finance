@@ -118,7 +118,10 @@
         .flex {
             display: flex;
             gap: var(--gap);
-            flex-wrap: wrap;
+        }
+
+        .flex-2 input {
+            flex: 1;
         }
 
         .list-item {
@@ -175,11 +178,13 @@
 
     <div class="box">
         <span class="box-title">المصاريف الشهرية الثابتة</span>
-        <div class="flex">
+
+        <div class="flex flex-2">
             <input type="text" id="fName" placeholder="اسم البند">
             <input type="number" id="fAmount" placeholder="المبلغ">
-            <button class="btn-add" onclick="addItem('fixed')">إضافة</button>
+            <button class="btn-add" onclick="addItem('fixed')">+</button>
         </div>
+
         <div id="fixedList"></div>
     </div>
 
@@ -190,11 +195,13 @@
 
     <div class="box">
         <span class="box-title">سجل الصرف اليومي</span>
-        <div class="flex">
-            <input type="text" id="vName" placeholder="غداء، بنزين...">
+
+        <div class="flex flex-2">
+            <input type="text" id="vName" placeholder="اسم البند">
             <input type="number" id="vAmount" placeholder="المبلغ">
-            <button class="btn-add" style="background: var(--danger);" onclick="addItem('var')">حسم</button>
+            <button class="btn-add" style="background: var(--danger);" onclick="addItem('var')">-</button>
         </div>
+
         <div id="variableList"></div>
     </div>
 
@@ -210,7 +217,6 @@
         <div>الأيام المتبقية: <b id="remDays">0</b></div>
     </div>
 
-    <!-- إدارة المستخدمين (مُدمجة) -->
     <div class="user-box">
         <span class="box-title">المستخدم</span>
 
